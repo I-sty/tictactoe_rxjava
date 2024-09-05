@@ -1,0 +1,47 @@
+[versions]
+accompanistDrawablepainter = "0.36.0"
+activityCompose = "1.9.1"
+agp = "8.6.0-rc01"
+koinAndroid = "3.5.6"
+koinAnnotations = "1.3.1"
+koinKspCompiler = "1.3.1"
+kotlin = "2.0.20"
+coreKtx = "1.13.1"
+appcompat = "1.7.0"
+lifecycleViewmodelCompose = "2.8.4"
+material = "1.12.0"
+material3 = "1.2.1"
+material3AdaptiveNavigationSuite = "1.3.0-rc01"
+ksp = "2.0.20-1.0.24"
+navigationRuntimeKtx = "2.8.0"
+navigationCompose = "2.8.0"
+uiToolingPreviewAndroid = "1.7.0"
+uiTooling = "1.7.0"
+
+[libraries]
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanistDrawablepainter" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroid" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspCompiler" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinAndroid" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id ="com.google.devtools.ksp", version.ref = "ksp" }
+
