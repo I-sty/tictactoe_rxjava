@@ -1,6 +1,6 @@
 package com.project.tictactoe.ui.screen
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -102,25 +106,69 @@ private fun PlayerSwitcher(currentPlayer: Player, onPlayerChange: (Player) -> Un
 }
 
 @Composable
-private fun PlayerButton(player: Player, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) Color.LightGray else Color.White
-    Text(
-        text = "Player ${player.name}",
+private fun PlayerButton(
+    player: Player,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val shape = CircleShape
+    OutlinedButton(
+        onClick = onClick,
         modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-            .background(backgroundColor)
-            .border(1.dp, Color.Gray)
-    )
+            .padding(16.dp)
+            .size(128.dp),
+        shape = shape,
+        border = BorderStroke(
+            width = 2.dp,
+            color = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                alpha = 0.3f
+            )
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(
+                alpha = 0.3f
+            )
+        )
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = when (player) {
+                    Player.X -> "✕"
+                    Player.O -> "○"
+                    else -> ""
+                },
+                style = MaterialTheme.typography.displaySmall
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Player ${player.name}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Score: ${player.score}",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
 }
 
 @Composable
 private fun TicTacToeBoard(board: Array<Array<Player>>, onCellClick: (Int, Int) -> Unit) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
         for (row in 0..2) {
-            Row {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 for (col in 0..2) {
-                    Cell(board[row][col], onCellClick, row, col)
+                    Cell(
+                        player = board[row][col],
+                        onClick = { onCellClick(row, col) }
+                    )
                 }
             }
         }
@@ -128,15 +176,35 @@ private fun TicTacToeBoard(board: Array<Array<Player>>, onCellClick: (Int, Int) 
 }
 
 @Composable
-private fun Cell(player: Player, onCellClick: (Int, Int) -> Unit, row: Int, col: Int) {
+private fun Cell(player: Player, onClick: () -> Unit) {
+    val color = when (player) {
+        Player.X -> MaterialTheme.colorScheme.primary
+        Player.O -> MaterialTheme.colorScheme.secondary
+        Player.None -> Color.Transparent
+    }
     Box(
         modifier = Modifier
-            .size(80.dp)
-            .border(1.dp, Color.Black)
-            .clickable { onCellClick(row, col) },
+            .size(100.dp)
+            .padding(8.dp)
+            .clickable(onClick = onClick)
+            .border(
+                2.dp,
+                MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(8.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = player.symbol, style = MaterialTheme.typography.titleMedium)
+        if (player != Player.None) {
+            Text(
+                text = when (player) {
+                    Player.X -> "✕"
+                    Player.O -> "○"
+                    else -> ""
+                },
+                style = MaterialTheme.typography.displayMedium,
+                color = color
+            )
+        }
     }
 }
 
