@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.project.tictactoe.data.domain.Player
+import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.ui.GameEvent
 import com.project.tictactoe.ui.MainViewModel
 import com.project.tictactoe.ui.TicTacToeGameState

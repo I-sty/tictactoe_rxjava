@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.project.tictactoe.ui.common.TicTacToeTopAppBar
+import com.project.tictactoe.ui.screen.history.HistoryScreen
 
 @Composable
 fun TicTacToeScreen() {

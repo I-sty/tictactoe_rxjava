@@ -1,6 +1,6 @@
 [versions]
 accompanistDrawablepainter = "0.36.0"
-activityCompose = "1.9.1"
+activityCompose = "1.9.2"
 agp = "8.6.0-rc01"
 koinAndroid = "3.5.6"
 koinAnnotations = "1.3.1"
@@ -8,13 +8,14 @@ koinKspCompiler = "1.3.1"
 kotlin = "2.0.20"
 coreKtx = "1.13.1"
 appcompat = "1.7.0"
-lifecycleViewmodelCompose = "2.8.4"
+lifecycleViewmodelCompose = "2.8.5"
 material = "1.12.0"
-material3 = "1.2.1"
-material3AdaptiveNavigationSuite = "1.3.0-rc01"
+material3 = "1.3.0"
+material3AdaptiveNavigationSuite = "1.3.0"
 ksp = "2.0.20-1.0.24"
 navigationRuntimeKtx = "2.8.0"
 navigationCompose = "2.8.0"
+roomCompiler = "2.6.1"
 uiToolingPreviewAndroid = "1.7.0"
 uiTooling = "1.7.0"
 
@@ -27,6 +28,8 @@ androidx-material3 = { module = "androidx.compose.material3:material3", version.
 androidx-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCompiler" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroid" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspCompiler" }

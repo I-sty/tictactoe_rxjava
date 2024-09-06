@@ -1,8 +1,8 @@
 package com.project.tictactoe.ui
 
 import androidx.lifecycle.ViewModel
-import com.project.tictactoe.data.domain.Player
 import com.project.tictactoe.data.repository.IGameRepository
+import com.project.tictactoe.domain.model.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.android.annotation.KoinViewModel

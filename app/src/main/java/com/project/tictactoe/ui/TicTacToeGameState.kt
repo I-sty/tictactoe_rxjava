@@ -1,6 +1,6 @@
 package com.project.tictactoe.ui
 
-import com.project.tictactoe.data.domain.Player
+import com.project.tictactoe.domain.model.Player
 
 data class TicTacToeGameState(
     val error: String? = null,
