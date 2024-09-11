@@ -1,6 +1,8 @@
 package com.project.tictactoe.ui.screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,42 +10,150 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
+import com.project.tictactoe.R
+import com.project.tictactoe.domain.model.GameState
+import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.ui.GameEvent
 import com.project.tictactoe.ui.MainViewModel
-import com.project.tictactoe.ui.TicTacToeGameState
+import com.project.tictactoe.ui.common.TopAppBar
 import com.project.tictactoe.ui.theme.PurpleTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = koinViewModel(), modifier: Modifier) {
+fun MainScreen(
+    viewModel: MainViewModel = koinViewModel(),
+    navController: NavHostController,
+    modifier: Modifier,
+) {
     val state by viewModel.state.collectAsState()
 
-    MainScreenContent(state, handleEvent = viewModel::handleEvent, modifier = modifier)
+    if (state.showWinnerPopup) {
+        AlertDialog(
+            onDismissRequest = { viewModel.handleEvent(GameEvent.OnDismissWinnerDialogClicked) },
+            title = { Text(stringResource(R.string.dialog_title_congratulations)) },
+            text = { Text(stringResource(R.string.dialog_content_you_won)) },
+            confirmButton = {
+                Button(onClick = { viewModel.handleEvent(GameEvent.OnDismissWinnerDialogClicked) }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
+        )
+    }
+
+    PurpleTheme {
+        Scaffold(topBar = { TopAppBar(navController = navController) }, floatingActionButton = {
+            GameFab(
+                state.status,
+                { viewModel.handleEvent(GameEvent.StartClicked) },
+                { viewModel.handleEvent(GameEvent.ResumeClicked) },
+                { viewModel.handleEvent(GameEvent.RestartClicked) })
+        }) { innerPadding ->
+            MainScreenContent(
+                state,
+                handleEvent = viewModel::handleEvent,
+                modifier = modifier
+                    .consumeWindowInsets(innerPadding)
+                    .padding(innerPadding)
+            )
+        }
+    }
+}
+
+@Composable
+private fun GameFab(
+    gameState: GameStatus, onPlay: () -> Unit, onResume: () -> Unit, onRestart: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        if (expanded) {
+            AnimatedVisibility(visible = expanded) {
+                MiniFabItem(icon = Icons.Filled.Refresh, text = "Restart", onClick = {
+                    onRestart()
+                    expanded = false
+                })
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            AnimatedVisibility(visible = expanded) {
+                MiniFabItem(icon = if (gameState == GameStatus.PAUSED) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                    text = if (gameState == GameStatus.PAUSED) "Resume" else "Pause",
+                    onClick = {
+                        if (gameState == GameStatus.PAUSED) onResume() else onPlay()
+                        expanded = false
+                    })
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        FloatingActionButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.MoreVert,
+                tint = Color.White,
+                contentDescription = if (expanded) "Close" else "Options"
+            )
+        }
+    }
+}
+
+@Composable
+private fun MiniFabItem(
+    icon: ImageVector, text: String, onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
+            .padding(8.dp), verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(imageVector = icon, contentDescription = text, tint = Color.White)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text, color = Color.White)
+    }
 }
 
 @Composable
 private fun MainScreenContent(
-    state: TicTacToeGameState,
+    state: GameState,
     handleEvent: (GameEvent) -> Unit,
     modifier: Modifier,
 ) {
@@ -53,8 +163,7 @@ private fun MainScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when {
-            state.loading ->
-                CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
+            state.loading -> CircularProgressIndicator(modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
 
             state.error != null -> {
                 Text(text = "Error: ${state.error}", color = Color.Red)
@@ -68,16 +177,15 @@ private fun MainScreenContent(
                 TicTacToeBoard(state.board) { row, col ->
                     handleEvent(
                         GameEvent.CellClicked(
-                            row,
-                            col
+                            row, col
                         )
                     )
                 }
                 if (state.winner != null) {
                     Text(
-                        "Winner: ${state.winner.name}",
-                        style = MaterialTheme.typography.titleLarge
+                        "Winner: ${state.winner.name}", style = MaterialTheme.typography.titleLarge
                     )
+                    handleEvent(GameEvent.ShowWinnerDialog)
                 }
             }
         }
@@ -107,9 +215,7 @@ private fun PlayerSwitcher(currentPlayer: Player, onPlayerChange: (Player) -> Un
 
 @Composable
 private fun PlayerButton(
-    player: Player,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    player: Player, isSelected: Boolean, onClick: () -> Unit
 ) {
     val shape = CircleShape
     OutlinedButton(
@@ -136,17 +242,14 @@ private fun PlayerButton(
                     Player.X -> "✕"
                     Player.O -> "○"
                     else -> ""
-                },
-                style = MaterialTheme.typography.displaySmall
+                }, style = MaterialTheme.typography.displaySmall
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Player ${player.name}",
-                style = MaterialTheme.typography.bodyMedium
+                text = "Player ${player.name}", style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "Score: ${player.score}",
-                style = MaterialTheme.typography.bodySmall
+                text = "Score: ${player.score}", style = MaterialTheme.typography.bodySmall
             )
         }
     }
@@ -161,14 +264,10 @@ private fun TicTacToeBoard(board: Array<Array<Player>>, onCellClick: (Int, Int) 
     ) {
         for (row in 0..2) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround
             ) {
                 for (col in 0..2) {
-                    Cell(
-                        player = board[row][col],
-                        onClick = { onCellClick(row, col) }
-                    )
+                    Cell(player = board[row][col], onClick = { onCellClick(row, col) })
                 }
             }
         }
@@ -188,11 +287,8 @@ private fun Cell(player: Player, onClick: () -> Unit) {
             .padding(8.dp)
             .clickable(onClick = onClick)
             .border(
-                2.dp,
-                MaterialTheme.colorScheme.outline,
-                shape = RoundedCornerShape(8.dp)
-            ),
-        contentAlignment = Alignment.Center
+                2.dp, MaterialTheme.colorScheme.outline, shape = RoundedCornerShape(8.dp)
+            ), contentAlignment = Alignment.Center
     ) {
         if (player != Player.None) {
             Text(
@@ -200,9 +296,7 @@ private fun Cell(player: Player, onClick: () -> Unit) {
                     Player.X -> "✕"
                     Player.O -> "○"
                     else -> ""
-                },
-                style = MaterialTheme.typography.displayMedium,
-                color = color
+                }, style = MaterialTheme.typography.displayMedium, color = color
             )
         }
     }
@@ -213,9 +307,7 @@ private fun Cell(player: Player, onClick: () -> Unit) {
 private fun MainScreenContentPreview() {
     PurpleTheme {
         MainScreenContent(
-            state = TicTacToeGameState().copy(winner = Player.O),
-            handleEvent = {},
-            modifier = Modifier
+            state = GameState().copy(winner = Player.O), handleEvent = {}, modifier = Modifier
         )
     }
 }

@@ -17,17 +17,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.project.tictactoe.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicTacToeTopAppBar(navController: androidx.navigation.NavHostController) {
+fun TopAppBar(title: String = stringResource(R.string.app_name), navController: NavHostController) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val canNavigateBack = currentBackStackEntry?.destination?.route != "main"
     var showMenu by remember { mutableStateOf(false) }
 
     TopAppBar(
-        title = { Text("Tic Tac Toe") },
+        title = { Text(title) },
         colors = TopAppBarDefaults.topAppBarColors()
             .copy(
                 titleContentColor = Color.White,
@@ -37,26 +40,36 @@ fun TicTacToeTopAppBar(navController: androidx.navigation.NavHostController) {
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
             }
         },
         actions = {
             IconButton(onClick = { showMenu = !showMenu }) {
-                Icon(Icons.Filled.MoreVert, contentDescription = "More")
+                Icon(
+                    Icons.Filled.MoreVert,
+                    contentDescription = "More"
+                )
             }
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false }
             ) {
-                DropdownMenuItem(text = { Text("History") }, onClick = {
-                    navController.navigate("history")
-                    showMenu = false
-                })
-                DropdownMenuItem(text = { Text("About") }, onClick = {
-                    navController.navigate("about")
-                    showMenu = false
-                })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.screen_title_history)) },
+                    onClick = {
+                        navController.navigate("history")
+                        showMenu = false
+                    })
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.screen_title_about)) },
+                    onClick = {
+                        navController.navigate("about")
+                        showMenu = false
+                    })
             }
         }
     )

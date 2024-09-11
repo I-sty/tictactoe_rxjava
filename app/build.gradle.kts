@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
+    id("androidx.room")
 }
 
 android {
@@ -28,9 +29,10 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     composeOptions {
@@ -38,12 +40,22 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "1.8"
     }
 
     buildFeatures {
         viewBinding = true
         compose = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     androidComponents.onVariants { variant ->
@@ -60,35 +72,43 @@ ksp {
 
 dependencies {
 
+    //compose
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material3)
     implementation(libs.material)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.material.icons.extended)
+
+
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    //koin
     implementation(libs.koin.android)
-    implementation(libs.koin.core)
     implementation(libs.koin.annotations)
     implementation(libs.koin.androidx.compose)
 
-
-
     implementation(libs.symbol.processing.api)
-    implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.accompanist.drawablepainter)
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.koin.ksp.compiler)
 
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.window.size)
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.activity.compose)
 
 
-    implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
-    ksp(libs.androidx.room.compiler)
-
+    //room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
 }

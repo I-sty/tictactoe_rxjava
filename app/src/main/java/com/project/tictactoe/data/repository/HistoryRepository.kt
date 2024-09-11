@@ -1,20 +1,24 @@
 package com.project.tictactoe.data.repository
 
-import com.project.tictactoe.data.local.HistoryDao
+import com.project.tictactoe.data.local.AppDatabase
 import com.project.tictactoe.data.model.HistoryEntity
 import org.koin.core.annotation.Single
 
 @Single
-class HistoryRepositoryImpl(private val dao: HistoryDao) : IHistoryRepository {
+class HistoryRepositoryImpl(private val db: AppDatabase) : IHistoryRepository {
     override suspend fun getHistory(): List<HistoryEntity> {
-        return dao.getAll()
+        return db.historyDao().getAll()
     }
 
     override suspend fun addHistory(historyEntity: HistoryEntity) {
-        return dao.addHistory(historyEntity)
+        return db.historyDao().addHistory(historyEntity)
     }
 
-    override suspend fun deleteHistory(historyEntity: HistoryEntity) {
-        return dao.delete(historyEntity)
+    override suspend fun deleteHistoryById(uid: Int) {
+        return db.historyDao().deleteByUid(uid)
+    }
+
+    override suspend fun deleteAllHistory() {
+        return db.historyDao().deleteAll()
     }
 }

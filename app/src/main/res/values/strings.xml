@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">TicTacToe</string>
+    <string name="app_name" translatable="false">TicTacToe</string>
+    <string name="screen_title_history">History</string>
+    <string name="screen_title_about">About</string>
+
+    <string name="dialog_title_congratulations">Congratulations!</string>
+    <string name="dialog_content_you_won">You won the game!</string>
+    <string name="label_history_empty">No game history found.</string>
+    <string name="label_confirm">Confirm</string>
+
+    <string name="dialog_title_remove_all">Confirm action</string>
+    <string name="dialog_content_remove_all">Are you sure you want to proceed?</string>
 </resources>
