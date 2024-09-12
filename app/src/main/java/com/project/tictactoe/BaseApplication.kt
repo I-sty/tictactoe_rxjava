@@ -1,8 +1,8 @@
 package com.project.tictactoe
 
 import android.app.Application
-import com.project.tictactoe.core.di.DatabaseModule
-import com.project.tictactoe.core.di.DispatcherModule
+import com.project.tictactoe.di.DatabaseModule
+import com.project.tictactoe.di.DispatcherModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

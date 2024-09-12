@@ -1,4 +1,4 @@
-package com.project.tictactoe.core.di
+package com.project.tictactoe.di
 
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.annotation.Module

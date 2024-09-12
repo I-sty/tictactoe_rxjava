@@ -6,7 +6,6 @@ sealed class GameEvent {
     data object RestartClicked : GameEvent()
     data class CellClicked(val row: Int, val col: Int) : GameEvent()
     data class PlayerChanged(val player: Player) : GameEvent()
-    data object ResumeClicked : GameEvent()
     data object ShowWinnerDialog : GameEvent()
     data object OnDismissWinnerDialogClicked : GameEvent()
 }

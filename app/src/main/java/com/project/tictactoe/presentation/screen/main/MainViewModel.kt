@@ -25,7 +25,6 @@ class MainViewModel(
             is GameEvent.CellClicked -> onCellClick(event.row, event.col)
             is GameEvent.PlayerChanged -> onPlayerChange(event.player)
             GameEvent.RestartClicked -> restartGame()
-            GameEvent.ResumeClicked -> resumeGame()
             GameEvent.ShowWinnerDialog -> {
                 _state.value = _state.value.copy(showWinnerPopup = true)
             }
@@ -53,10 +52,6 @@ class MainViewModel(
             )
     }
 
-    private fun resumeGame() {
-        //todo resume game
-    }
-
     /**
      * Restart the game to its initial state.
      */
@@ -77,7 +72,6 @@ class MainViewModel(
                 board = Array(3) { Array(3) { Player.None } },
                 winner = null,
                 status = GameStatus.NOT_STARTED
-
             )
     }
 
@@ -115,7 +109,7 @@ class MainViewModel(
                 _state.value =
                     _state.value.copy(
                         board = updatedBoard,
-                        winner = winner,
+                        winner = null,
                         currentPlayer = nextPlayer
                     )
             }

@@ -1,4 +1,4 @@
-package com.project.tictactoe.core.di
+package com.project.tictactoe.di
 
 import android.app.Application
 import androidx.room.Room
