@@ -6,6 +6,6 @@ import org.koin.core.annotation.Factory
 @Factory
 class DeleteHistoryItemUseCase(private val historyRepository: IHistoryRepository) {
     suspend operator fun invoke(uid: Int) {
-        return historyRepository.deleteHistoryById(uid)
+        historyRepository.deleteHistoryById(uid)
     }
 }

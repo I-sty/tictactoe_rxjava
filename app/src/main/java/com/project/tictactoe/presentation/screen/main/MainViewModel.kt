@@ -40,7 +40,7 @@ class MainViewModel(
     /**
      * Start a new game with the current player as the winner.
      */
-    internal fun newMatch() {
+    private fun newMatch() {
         val winner = _state.value.winner ?: Player.X
         _state.value =
             _state.value.copy(
