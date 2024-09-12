@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui
+package com.project.tictactoe.presentation.screen.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,23 +6,24 @@ import com.project.tictactoe.domain.model.GameState
 import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.domain.usecase.AddHistoryUseCase
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class MainViewModel(private val addHistoryUseCase: AddHistoryUseCase) : ViewModel() {
+class MainViewModel(
+    private val addHistoryUseCase: AddHistoryUseCase,
+    private val ioDispatcher: CoroutineDispatcher
+) : ViewModel() {
     private val _state = MutableStateFlow(GameState())
     val state: StateFlow<GameState> = _state
 
     fun handleEvent(event: GameEvent) {
         when (event) {
             is GameEvent.CellClicked -> onCellClick(event.row, event.col)
-            GameEvent.GameLoaded -> {}
             is GameEvent.PlayerChanged -> onPlayerChange(event.player)
-            GameEvent.StartClicked -> {}
             GameEvent.RestartClicked -> restartGame()
             GameEvent.ResumeClicked -> resumeGame()
             GameEvent.ShowWinnerDialog -> {
@@ -31,12 +32,15 @@ class MainViewModel(private val addHistoryUseCase: AddHistoryUseCase) : ViewMode
 
             GameEvent.OnDismissWinnerDialogClicked -> {
                 _state.value = _state.value.copy(showWinnerPopup = false)
-                newGame()
+                newMatch()
             }
         }
     }
 
-    private fun newGame() {
+    /**
+     * Start a new game with the current player as the winner.
+     */
+    internal fun newMatch() {
         val winner = _state.value.winner ?: Player.X
         _state.value =
             _state.value.copy(
@@ -46,22 +50,30 @@ class MainViewModel(private val addHistoryUseCase: AddHistoryUseCase) : ViewMode
                 board = Array(3) { Array(3) { Player.None } },
                 winner = null,
                 status = GameStatus.NOT_STARTED
-
             )
     }
 
     private fun resumeGame() {
-
+        //todo resume game
     }
 
-    private fun restartGame() {
+    /**
+     * Restart the game to its initial state.
+     */
+    internal fun restartGame() {
+        val playerX = Player.X
+        playerX.score = 0
+
+        val playerO = Player.O
+        playerO.score = 0
+
         _state.value =
             _state.value.copy(
                 error = null,
                 loading = false,
-                currentPlayer = Player.X,
-                playerX = Player.X,
-                playerO = Player.O,
+                currentPlayer = playerX,
+                playerX = playerX,
+                playerO = playerO,
                 board = Array(3) { Array(3) { Player.None } },
                 winner = null,
                 status = GameStatus.NOT_STARTED
@@ -89,19 +101,32 @@ class MainViewModel(private val addHistoryUseCase: AddHistoryUseCase) : ViewMode
             val nextPlayer = getNextPlayer()
             if (winner != null) {
                 winner.score++
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch(ioDispatcher) {
                     addHistoryUseCase(_state.value.playerX, _state.value.playerO)
                 }
-                _state.value.status = GameStatus.ENDED_WITH_WINNER
+                _state.value =
+                    _state.value.copy(
+                        board = updatedBoard,
+                        winner = winner,
+                        status = GameStatus.ENDED_WITH_WINNER,
+                        currentPlayer = nextPlayer
+                    )
+            } else {
+                _state.value =
+                    _state.value.copy(
+                        board = updatedBoard,
+                        winner = winner,
+                        currentPlayer = nextPlayer
+                    )
             }
-            _state.value =
-                _state.value.copy(board = updatedBoard, winner = winner, currentPlayer = nextPlayer)
             if (boardIsFull(updatedBoard)) {
-                _state.value = _state.value.copy(winner = Player.None)
-                viewModelScope.launch(Dispatchers.IO) {
+                _state.value = _state.value.copy(
+                    winner = Player.None,
+                    status = GameStatus.ENDED_WITHOUT_WINNER
+                )
+                viewModelScope.launch(ioDispatcher) {
                     addHistoryUseCase(_state.value.playerX, _state.value.playerO)
                 }
-                _state.value.status = GameStatus.ENDED_WITHOUT_WINNER
             }
         }
     }

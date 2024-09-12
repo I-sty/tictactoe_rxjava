@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.screen.history
+package com.project.tictactoe.presentation.screen.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

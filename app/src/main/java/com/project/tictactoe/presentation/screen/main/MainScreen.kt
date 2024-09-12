@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.screen
+package com.project.tictactoe.presentation.screen.main
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
@@ -53,10 +53,8 @@ import com.project.tictactoe.R
 import com.project.tictactoe.domain.model.GameState
 import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
-import com.project.tictactoe.ui.GameEvent
-import com.project.tictactoe.ui.MainViewModel
-import com.project.tictactoe.ui.common.TopAppBar
-import com.project.tictactoe.ui.theme.PurpleTheme
+import com.project.tictactoe.presentation.common.TopAppBar
+import com.project.tictactoe.presentation.theme.PurpleTheme
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -85,7 +83,7 @@ fun MainScreen(
         Scaffold(topBar = { TopAppBar(navController = navController) }, floatingActionButton = {
             GameFab(
                 state.status,
-                { viewModel.handleEvent(GameEvent.StartClicked) },
+                { },
                 { viewModel.handleEvent(GameEvent.ResumeClicked) },
                 { viewModel.handleEvent(GameEvent.RestartClicked) })
         }) { innerPadding ->

@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui
+package com.project.tictactoe.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,9 +10,9 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.project.tictactoe.ui.screen.AboutScreen
-import com.project.tictactoe.ui.screen.MainScreen
-import com.project.tictactoe.ui.screen.history.HistoryScreen
+import com.project.tictactoe.presentation.screen.about.AboutScreen
+import com.project.tictactoe.presentation.screen.history.HistoryScreen
+import com.project.tictactoe.presentation.screen.main.MainScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -92,13 +92,13 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.annotations)
     implementation(libs.koin.androidx.compose)
+    ksp(libs.koin.ksp.compiler)
 
     implementation(libs.symbol.processing.api)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui.tooling.preview.android)
     implementation(libs.accompanist.drawablepainter)
     debugImplementation(libs.androidx.ui.tooling)
-    ksp(libs.koin.ksp.compiler)
 
     implementation(libs.androidx.material3.window.size)
     implementation(libs.androidx.material3.adaptive.navigation.suite)
@@ -110,5 +110,13 @@ dependencies {
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+
+    //test
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.junit.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
 
 }

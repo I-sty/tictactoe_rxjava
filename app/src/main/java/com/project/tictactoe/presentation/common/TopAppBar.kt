@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.common
+package com.project.tictactoe.presentation.common
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack

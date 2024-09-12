@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.screen
+package com.project.tictactoe.presentation.screen.about
 
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.Image
@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.project.tictactoe.R
-import com.project.tictactoe.ui.common.TopAppBar
-import com.project.tictactoe.ui.theme.PurpleTheme
+import com.project.tictactoe.presentation.common.TopAppBar
+import com.project.tictactoe.presentation.theme.PurpleTheme
 
 @Composable
 fun AboutScreen(navController: NavHostController, modifier: Modifier) {

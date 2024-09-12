@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.theme
+package com.project.tictactoe.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.darkColorScheme
@@ -6,18 +6,18 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkRedColorPalette = darkColorScheme(
-    primary = Red200,
-    primaryContainer = Red700,
-    secondary = Teal200,
+private val DarkYellowColorPalette = darkColorScheme(
+    primary = Yellow200,
+    primaryContainer = Yellow700,
+    secondary = Orange200,
     onPrimary = Color.White,
     onSecondary = Color.Black
 )
 
-private val LightRedColorPalette = lightColorScheme(
-    primary = Red500,
-    primaryContainer = Red700,
-    secondary = Blue200,
+private val LightYellowColorPalette = lightColorScheme(
+    primary = Yellow500,
+    primaryContainer = Yellow700,
+    secondary = Orange200,
     onPrimary = Color.White,
     onSecondary = Color.Black
 
@@ -31,12 +31,11 @@ private val LightRedColorPalette = lightColorScheme(
     */
 )
 
-
 @Composable
-fun RedTheme(
+fun YellowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
-    val colors = if (darkTheme) DarkRedColorPalette else LightRedColorPalette
+    val colors = if (darkTheme) DarkYellowColorPalette else LightYellowColorPalette
     TicTacToeGameTheme(colors, content)
 }

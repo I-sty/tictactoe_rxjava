@@ -1,4 +1,4 @@
-package com.project.tictactoe.ui.screen.history
+package com.project.tictactoe.presentation.screen.history
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
@@ -47,8 +47,8 @@ import androidx.navigation.NavHostController
 import com.project.tictactoe.R
 import com.project.tictactoe.domain.model.History
 import com.project.tictactoe.domain.model.toHistoryString
-import com.project.tictactoe.ui.common.TopAppBar
-import com.project.tictactoe.ui.theme.PurpleTheme
+import com.project.tictactoe.presentation.common.TopAppBar
+import com.project.tictactoe.presentation.theme.PurpleTheme
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
