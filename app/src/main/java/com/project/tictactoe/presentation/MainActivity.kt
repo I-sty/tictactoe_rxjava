@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.project.tictactoe.presentation.screen.about.AboutScreen
 import com.project.tictactoe.presentation.screen.history.HistoryScreen
 import com.project.tictactoe.presentation.screen.main.MainScreen
+import com.project.tictactoe.presentation.screen.nameeditor.NamePickerScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,8 +27,8 @@ class MainActivity : ComponentActivity() {
 
             val modifier = Modifier.fillMaxSize()
 
-            NavHost(navController = navController, startDestination = "main") {
-                composable("main") {
+            NavHost(navController = navController, startDestination = "namePicker") {
+                composable("main/{player1Name}/{player2Name}") {
                     MainScreen(
                         navController = navController,
                         modifier = modifier
@@ -41,6 +42,12 @@ class MainActivity : ComponentActivity() {
                 }
                 composable("history") {
                     HistoryScreen(
+                        navController = navController,
+                        modifier = modifier
+                    )
+                }
+                composable("namePicker") {
+                    NamePickerScreen(
                         navController = navController,
                         modifier = modifier
                     )

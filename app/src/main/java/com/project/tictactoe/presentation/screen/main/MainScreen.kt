@@ -21,8 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -48,10 +46,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavHostController
 import com.project.tictactoe.R
 import com.project.tictactoe.domain.model.GameState
-import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.presentation.common.TopAppBar
 import com.project.tictactoe.presentation.theme.PurpleTheme
@@ -64,6 +63,13 @@ fun MainScreen(
     modifier: Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+
+    val player1Name = navController.currentBackStackEntry?.arguments?.getString("player1Name")
+    val player2Name = navController.currentBackStackEntry?.arguments?.getString("player2Name")
+
+    LifecycleEventEffect(Lifecycle.Event.ON_START) {
+        viewModel.handleEvent(GameEvent.PlayerNameChanged(player1Name, player2Name))
+    }
 
     if (state.showWinnerPopup) {
         AlertDialog(
@@ -80,13 +86,18 @@ fun MainScreen(
     }
 
     PurpleTheme {
-        Scaffold(topBar = { TopAppBar(navController = navController) }, floatingActionButton = {
-            GameFab(
-                state.status,
-                { },
-                { viewModel.handleEvent(GameEvent.ResumeClicked) },
-                { viewModel.handleEvent(GameEvent.RestartClicked) })
-        }) { innerPadding ->
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navController = navController,
+                    canNavigateBack = false
+                )
+            },
+            floatingActionButton = {
+                GameFab(
+                    onRestart = { viewModel.handleEvent(GameEvent.RestartClicked) })
+            }) { innerPadding ->
             MainScreenContent(
                 state,
                 handleEvent = viewModel::handleEvent,
@@ -100,7 +111,7 @@ fun MainScreen(
 
 @Composable
 private fun GameFab(
-    gameState: GameStatus, onPlay: () -> Unit, onResume: () -> Unit, onRestart: () -> Unit
+    onRestart: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -111,15 +122,6 @@ private fun GameFab(
                     onRestart()
                     expanded = false
                 })
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            AnimatedVisibility(visible = expanded) {
-                MiniFabItem(icon = if (gameState == GameStatus.PAUSED) Icons.Filled.PlayArrow else Icons.Filled.Pause,
-                    text = if (gameState == GameStatus.PAUSED) "Resume" else "Pause",
-                    onClick = {
-                        if (gameState == GameStatus.PAUSED) onResume() else onPlay()
-                        expanded = false
-                    })
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -181,7 +183,8 @@ private fun MainScreenContent(
                 }
                 if (state.winner != null) {
                     Text(
-                        "Winner: ${state.winner.name}", style = MaterialTheme.typography.titleLarge
+                        "Winner: ${state.winner.username}",
+                        style = MaterialTheme.typography.titleLarge
                     )
                     handleEvent(GameEvent.ShowWinnerDialog)
                 }
@@ -244,7 +247,7 @@ private fun PlayerButton(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Player ${player.name}", style = MaterialTheme.typography.bodyMedium
+                text = player.username, style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = "Score: ${player.score}", style = MaterialTheme.typography.bodySmall

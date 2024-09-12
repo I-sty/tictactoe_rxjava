@@ -13,11 +13,11 @@ class AddHistoryUseCase(private val historyRepository: IHistoryRepository) {
         return historyRepository.addHistory(
             HistoryEntity(
                 timestamp = Date().toDAOString(),
-                playerName = winner.name,
+                playerName = winner.username,
                 playerScore = winner.score,
                 playerSymbol = winner.symbol,
                 opponentSymbol = opponent.symbol,
-                opponentName = opponent.name,
+                opponentName = opponent.username,
                 opponentScore = opponent.score
             )
         )

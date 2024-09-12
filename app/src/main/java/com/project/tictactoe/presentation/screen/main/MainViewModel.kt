@@ -33,6 +33,30 @@ class MainViewModel(
                 _state.value = _state.value.copy(showWinnerPopup = false)
                 newMatch()
             }
+
+            is GameEvent.PlayerNameChanged -> {
+                if (event.player1Name != null && event.player2Name != null) {
+                    val playerX = Player.X
+                    playerX.username = event.player1Name
+                    playerX.score = 0
+
+                    val playerO = Player.O
+                    playerO.username = event.player2Name
+                    playerO.score = 0
+
+                    _state.value =
+                        _state.value.copy(
+                            error = null,
+                            loading = false,
+                            currentPlayer = playerX,
+                            playerX = playerX,
+                            playerO = playerO,
+                            board = Array(3) { Array(3) { Player.None } },
+                            winner = null,
+                            status = GameStatus.NOT_STARTED
+                        )
+                }
+            }
         }
     }
 

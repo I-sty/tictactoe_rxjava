@@ -19,14 +19,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.project.tictactoe.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(title: String = stringResource(R.string.app_name), navController: NavHostController) {
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val canNavigateBack = currentBackStackEntry?.destination?.route != "main"
+fun TopAppBar(
+    title: String = stringResource(R.string.app_name),
+    navController: NavHostController,
+    canNavigateBack: Boolean = true,
+    showActions: Boolean = true
+) {
     var showMenu by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -48,28 +50,30 @@ fun TopAppBar(title: String = stringResource(R.string.app_name), navController: 
             }
         },
         actions = {
-            IconButton(onClick = { showMenu = !showMenu }) {
-                Icon(
-                    Icons.Filled.MoreVert,
-                    contentDescription = "More"
-                )
-            }
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.screen_title_history)) },
-                    onClick = {
-                        navController.navigate("history")
-                        showMenu = false
-                    })
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.screen_title_about)) },
-                    onClick = {
-                        navController.navigate("about")
-                        showMenu = false
-                    })
+            if (showActions) {
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        Icons.Filled.MoreVert,
+                        contentDescription = "More"
+                    )
+                }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.screen_title_history)) },
+                        onClick = {
+                            navController.navigate("history")
+                            showMenu = false
+                        })
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.screen_title_about)) },
+                        onClick = {
+                            navController.navigate("about")
+                            showMenu = false
+                        })
+                }
             }
         }
     )
