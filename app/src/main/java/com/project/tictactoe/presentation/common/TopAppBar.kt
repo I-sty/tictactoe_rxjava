@@ -64,13 +64,13 @@ fun TopAppBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.screen_title_history)) },
                         onClick = {
-                            navController.navigate("history")
+                            navController.navigate(HistoryScreenRoute)
                             showMenu = false
                         })
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.screen_title_about)) },
                         onClick = {
-                            navController.navigate("about")
+                            navController.navigate(AboutScreenRoute)
                             showMenu = false
                         })
                 }

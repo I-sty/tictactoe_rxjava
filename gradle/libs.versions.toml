@@ -12,6 +12,7 @@ androidxComposeBom = "2024.09.01"
 koinTest = "3.5.6"
 kotlin = "2.0.20"
 kotlinxCoroutinesTest = "1.8.1"
+kotlinxSerializationJson = "1.7.2"
 ksp = "2.0.20-1.0.25"
 lifecycleViewmodelCompose = "2.8.5"
 material = "1.12.0"
@@ -42,6 +43,7 @@ junit-junit = { module = "junit:junit", version.ref = "junitVersion" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinTest" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koinTest" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCompiler" }
@@ -60,3 +62,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id ="com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

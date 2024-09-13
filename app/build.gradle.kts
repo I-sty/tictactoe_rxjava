@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     id("androidx.room")
 }
 
@@ -87,6 +88,7 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     //koin
     implementation(libs.koin.android)

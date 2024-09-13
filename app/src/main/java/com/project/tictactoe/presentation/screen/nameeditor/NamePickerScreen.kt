@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import com.project.tictactoe.R
+import com.project.tictactoe.presentation.common.MainScreenRoute
 import com.project.tictactoe.presentation.common.TopAppBar
 import com.project.tictactoe.presentation.theme.PurpleTheme
 import org.koin.androidx.compose.koinViewModel
@@ -44,7 +45,7 @@ fun NamePickerScreen(
                     val player2Name = it.player2Name
 
                     navController.navigate(
-                        "main/$player1Name/$player2Name",
+                        route = MainScreenRoute(player1Name, player2Name),
                         navOptions = NavOptions.Builder().setPopUpTo("namePicker", true)
                             .build()
                     )
