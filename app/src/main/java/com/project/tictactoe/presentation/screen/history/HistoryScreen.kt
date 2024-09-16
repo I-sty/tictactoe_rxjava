@@ -31,8 +31,8 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,7 +58,7 @@ fun HistoryScreen(
     navController: NavHostController,
     modifier: Modifier,
 ) {
-    val historyState by viewModel.historyState.collectAsState()
+    val historyList by viewModel.getHistoryLiveData().observeAsState(emptyList())
     var showConfirmDialog by remember { mutableStateOf(false) }
 
     if (showConfirmDialog) {
@@ -87,9 +87,9 @@ fun HistoryScreen(
             floatingActionButton = { RemoveAllFab { showConfirmDialog = true } }
         ) { innerPadding ->
             HistoryScreenContent(
-                historyState,
-                modifier.padding(innerPadding),
-                viewModel::handleEvent
+                historyList = historyList,
+                modifier = modifier.padding(innerPadding),
+                handleEvent = viewModel::handleEvent
             )
         }
     }

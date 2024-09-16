@@ -8,5 +8,7 @@ sealed class GameEvent {
     data class PlayerChanged(val player: Player) : GameEvent()
     data class PlayerNameChanged(val player1Name: String?, val player2Name: String?) : GameEvent()
     data object ShowWinnerDialog : GameEvent()
+    data object DrawGameDialog : GameEvent()
     data object OnDismissWinnerDialogClicked : GameEvent()
+    data object OnDismissDrawGameDialogClicked : GameEvent()
 }

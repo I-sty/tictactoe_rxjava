@@ -8,6 +8,9 @@
     <string name="label_history_empty">No game history found.</string>
     <string name="label_confirm">Confirm</string>
 
+    <string name="dialog_title_draw_game">Draw game!</string>
+    <string name="dialog_content_draw_game">It\'s a draw game!</string>
+
     <string name="dialog_title_remove_all">Confirm action</string>
     <string name="dialog_content_remove_all">Are you sure you want to proceed?</string>
     <string name="title_name_editor">Name picker</string>

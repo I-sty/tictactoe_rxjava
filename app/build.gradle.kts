@@ -106,12 +106,20 @@ dependencies {
     implementation(libs.androidx.material3.adaptive.navigation.suite)
     implementation(libs.androidx.activity.compose)
 
+    implementation(libs.androidx.runtime.livedata)
+
 
     //room
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+    implementation(libs.androidx.room.rxjava3)
+
+    //RxJava
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
+    implementation(libs.rxjava3.rxkotlin)
 
 
     //test
@@ -119,6 +127,6 @@ dependencies {
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.junit.junit)
     testImplementation(libs.mockk)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.core.testing)
 
 }

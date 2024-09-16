@@ -2,7 +2,7 @@ package com.project.tictactoe
 
 import android.app.Application
 import com.project.tictactoe.di.DatabaseModule
-import com.project.tictactoe.di.DispatcherModule
+import com.project.tictactoe.di.SchedulersModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,7 +16,7 @@ class BaseApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@BaseApplication)
-            modules(DatabaseModule().module, DispatcherModule().module, defaultModule)
+            modules(DatabaseModule().module, SchedulersModule().module, defaultModule)
         }
     }
 

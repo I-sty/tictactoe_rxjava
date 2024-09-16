@@ -1,24 +1,30 @@
 package com.project.tictactoe.presentation.screen.main
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.project.tictactoe.domain.model.GameState
 import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.domain.usecase.AddHistoryUseCase
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class MainViewModel(
     private val addHistoryUseCase: AddHistoryUseCase,
-    private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val _state = MutableStateFlow(GameState())
-    val state: StateFlow<GameState> = _state
+    private val _state: MutableLiveData<GameState> = MutableLiveData(GameState())
+    val state: LiveData<GameState> = _state
+
+    private val disposables: CompositeDisposable = CompositeDisposable()
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
+    }
 
     fun handleEvent(event: GameEvent) {
         when (event) {
@@ -26,11 +32,11 @@ class MainViewModel(
             is GameEvent.PlayerChanged -> onPlayerChange(event.player)
             GameEvent.RestartClicked -> restartGame()
             GameEvent.ShowWinnerDialog -> {
-                _state.value = _state.value.copy(showWinnerPopup = true)
+                _state.value = _state.value?.copy(showWinnerPopup = true)
             }
 
             GameEvent.OnDismissWinnerDialogClicked -> {
-                _state.value = _state.value.copy(showWinnerPopup = false)
+                _state.value = _state.value?.copy(showWinnerPopup = false)
                 newMatch()
             }
 
@@ -45,7 +51,7 @@ class MainViewModel(
                     playerO.score = 0
 
                     _state.value =
-                        _state.value.copy(
+                        _state.value?.copy(
                             error = null,
                             loading = false,
                             currentPlayer = playerX,
@@ -57,6 +63,13 @@ class MainViewModel(
                         )
                 }
             }
+
+            GameEvent.DrawGameDialog -> _state.value = _state.value?.copy(showDrawGamePopup = true)
+            GameEvent.OnDismissDrawGameDialogClicked -> {
+                _state.value =
+                    _state.value?.copy(showDrawGamePopup = false)
+                newMatch()
+            }
         }
     }
 
@@ -64,9 +77,9 @@ class MainViewModel(
      * Start a new game with the current player as the winner.
      */
     private fun newMatch() {
-        val winner = _state.value.winner ?: Player.X
+        val winner = _state.value?.winner ?: Player.X
         _state.value =
-            _state.value.copy(
+            _state.value?.copy(
                 error = null,
                 loading = false,
                 currentPlayer = winner,
@@ -87,7 +100,7 @@ class MainViewModel(
         playerO.score = 0
 
         _state.value =
-            _state.value.copy(
+            _state.value?.copy(
                 error = null,
                 loading = false,
                 currentPlayer = playerX,
@@ -100,30 +113,40 @@ class MainViewModel(
     }
 
     private fun onPlayerChange(player: Player) {
-        _state.value = _state.value.copy(currentPlayer = player)
+        _state.value = _state.value?.copy(currentPlayer = player)
     }
 
-    private fun getNextPlayer(): Player {
-        return if (_state.value.currentPlayer.symbol == Player.X.symbol) {
-            _state.value.playerO
+    private fun getNextPlayer(): Player? {
+        return if (_state.value?.currentPlayer?.symbol == Player.X.symbol) {
+            _state.value?.playerO
         } else {
-            _state.value.playerX
+            _state.value?.playerX
         }
     }
 
     private fun onCellClick(row: Int, col: Int) {
-        if (_state.value.board[row][col] == Player.None && _state.value.winner == null) {
-            val updatedBoard = _state.value.board.copyOf()
-            updatedBoard[row][col] = _state.value.currentPlayer
+        if (_state.value?.board?.get(row)
+                ?.get(col) == Player.None && _state.value!!.winner == null
+        ) {
+            val updatedBoard = _state.value!!.board.copyOf()
+            updatedBoard[row][col] = _state.value!!.currentPlayer
             val winner: Player? = checkWinner(updatedBoard)
             val nextPlayer = getNextPlayer()
             if (winner != null) {
                 winner.score++
-                viewModelScope.launch(ioDispatcher) {
-                    addHistoryUseCase(_state.value.playerX, _state.value.playerO)
-                }
+                val disposable =
+                    addHistoryUseCase(
+                        winner,
+                        nextPlayer!!
+                    ).observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            Log.i("History", "History added successfully")
+                        }, { throwable ->
+                            Log.e("History", "Error adding history", throwable)
+                        })
+                disposables.add(disposable)
                 _state.value =
-                    _state.value.copy(
+                    _state.value!!.copy(
                         board = updatedBoard,
                         winner = winner,
                         status = GameStatus.ENDED_WITH_WINNER,
@@ -131,20 +154,26 @@ class MainViewModel(
                     )
             } else {
                 _state.value =
-                    _state.value.copy(
+                    _state.value!!.copy(
                         board = updatedBoard,
                         winner = null,
-                        currentPlayer = nextPlayer
+                        currentPlayer = nextPlayer!!
                     )
             }
             if (boardIsFull(updatedBoard)) {
-                _state.value = _state.value.copy(
+                _state.value = _state.value!!.copy(
                     winner = Player.None,
                     status = GameStatus.ENDED_WITHOUT_WINNER
                 )
-                viewModelScope.launch(ioDispatcher) {
-                    addHistoryUseCase(_state.value.playerX, _state.value.playerO)
-                }
+                val disposable =
+                    addHistoryUseCase(_state.value!!.playerX, _state.value!!.playerO).observeOn(
+                        AndroidSchedulers.mainThread()
+                    ).subscribe({
+                        Log.i("History", "History added successfully")
+                    }, { throwable ->
+                        Log.e("History", "Error adding history", throwable)
+                    })
+                disposables.add(disposable)
             }
         }
     }

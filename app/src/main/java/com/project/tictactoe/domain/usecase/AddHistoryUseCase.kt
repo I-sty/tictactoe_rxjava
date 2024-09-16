@@ -4,13 +4,18 @@ import com.project.tictactoe.data.model.HistoryEntity
 import com.project.tictactoe.data.repository.IHistoryRepository
 import com.project.tictactoe.domain.model.Player
 import com.project.tictactoe.domain.model.toDAOString
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Scheduler
 import org.koin.core.annotation.Factory
 import java.util.Date
 
 @Factory
-class AddHistoryUseCase(private val historyRepository: IHistoryRepository) {
-    suspend operator fun invoke(winner: Player, opponent: Player) {
-        return historyRepository.addHistory(
+class AddHistoryUseCase(
+    private val historyRepository: IHistoryRepository,
+    private val ioScheduler: Scheduler
+) {
+    operator fun invoke(winner: Player, opponent: Player): Observable<Unit> = historyRepository
+        .addHistory(
             HistoryEntity(
                 timestamp = Date().toDAOString(),
                 playerName = winner.username,
@@ -20,6 +25,5 @@ class AddHistoryUseCase(private val historyRepository: IHistoryRepository) {
                 opponentName = opponent.username,
                 opponentScore = opponent.score
             )
-        )
-    }
+        ).subscribeOn(ioScheduler).toObservable()
 }

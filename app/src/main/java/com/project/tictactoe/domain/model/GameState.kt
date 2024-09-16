@@ -10,6 +10,7 @@ data class GameState(
     val winner: Player? = null,
     var status: GameStatus = GameStatus.NOT_STARTED,
     var showWinnerPopup: Boolean = false,
+    var showDrawGamePopup: Boolean = false,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -26,6 +27,7 @@ data class GameState(
         if (winner != other.winner) return false
         if (status != other.status) return false
         if (showWinnerPopup != other.showWinnerPopup) return false
+        if (showDrawGamePopup != other.showDrawGamePopup) return false
 
         return true
     }
@@ -40,6 +42,7 @@ data class GameState(
         result = 31 * result + (winner?.hashCode() ?: 0)
         result = 31 * result + status.hashCode()
         result = 31 * result + showWinnerPopup.hashCode()
+        result = 31 * result + showDrawGamePopup.hashCode()
         return result
     }
 }

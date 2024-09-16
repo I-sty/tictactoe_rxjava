@@ -1,78 +1,80 @@
 package com.project.tictactoe.presentation.screen.history
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.project.tictactoe.domain.model.History
 import com.project.tictactoe.domain.usecase.DeleteAllHistoryUseCase
 import com.project.tictactoe.domain.usecase.DeleteHistoryItemUseCase
 import com.project.tictactoe.domain.usecase.GetHistoryUseCase
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
+import io.reactivex.rxjava3.core.Observable
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.Date
 
-@ExperimentalCoroutinesApi
 class HistoryViewModelTest {
 
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private lateinit var getHistoryUseCase: GetHistoryUseCase
+    private lateinit var deleteHistoryItemUseCase: DeleteHistoryItemUseCase
+    private lateinit var deleteAllHistoryUseCase: DeleteAllHistoryUseCase
     private lateinit var viewModel: HistoryViewModel
-    private val getHistoryUseCase: GetHistoryUseCase = mockk()
-    private val deleteHistoryItemUseCase: DeleteHistoryItemUseCase = mockk(relaxed = true)
-    private val deleteAllHistoryUseCase: DeleteAllHistoryUseCase = mockk(relaxed = true)
-    private val testDispatcher = UnconfinedTestDispatcher()
-    private val historyList = listOf(
-        History(1, Date(), "Player 1", 0, "X", "O", "Player 2", opponentScore = 0),
-        History(2, Date(), "Player 3", 0, "O", "X", "Player 4", opponentScore = 0)
-    )
 
     @Before
     fun setup() {
-        Dispatchers.setMain(testDispatcher)
+        getHistoryUseCase = mockk()
+        deleteHistoryItemUseCase = mockk()
+        deleteAllHistoryUseCase = mockk()
         viewModel = HistoryViewModel(
-            testDispatcher,
             getHistoryUseCase,
             deleteHistoryItemUseCase,
             deleteAllHistoryUseCase
         )
-
-
-        coEvery { getHistoryUseCase() } returns historyList
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 
     @Test
-    fun `loadHistory updates historyState`() = runTest {
+    fun `loadHistory should update historyLiveData`() {
+        // Arrange
+        val mockHistoryList = listOf(
+            History(1, Date(), "Player 1", 1, "X", "O", "Player 2", 0)
+        )
+        coEvery { getHistoryUseCase() } returns Observable.just(mockHistoryList)
 
+        // Act
         viewModel.handleEvent(HistoryEvent.LoadHistory)
 
-        assertEquals(historyList.reversed(), viewModel.historyState.value)
+        // Assert
+        assertEquals(mockHistoryList, viewModel.getHistoryLiveData().value)
     }
 
     @Test
-    fun `handleEvent RemoveAllClicked calls deleteAllHistoryUseCase and loadHistory`() = runTest {
+    fun `removeAllClicked should clear historyLiveData`() {
+        // Arrange
+        coEvery { deleteAllHistoryUseCase() } returns Observable.just(1)
+        coEvery { getHistoryUseCase() } returns Observable.just(emptyList())
+
+        // Act
         viewModel.handleEvent(HistoryEvent.RemoveAllClicked)
 
-        coVerify { deleteAllHistoryUseCase() }
-        coVerify { getHistoryUseCase() }
+        // Assert
+        assertEquals(emptyList<History>(), viewModel.getHistoryLiveData().value)
     }
 
     @Test
-    fun `handleEvent RemoveItemSwiped calls deleteHistoryItemUseCase and loadHistory`() = runTest {
-        val historyItem = History(1, Date(), "Player 1", 0, "X", "O", "Player 2", 1)
+    fun `removeItemSwiped should remove item and update historyLiveData`() {
+        // Arrange
+        val historyItem = History(1, Date(), "Player 1", 1, "X", "O", "Player 2", 0)
+        coEvery { deleteHistoryItemUseCase(historyItem.uid) } returns Observable.just(1)
+        coEvery { getHistoryUseCase() } returns Observable.just(emptyList())
+
+        // Act
         viewModel.handleEvent(HistoryEvent.RemoveItemSwiped(historyItem))
 
-        coVerify { deleteHistoryItemUseCase(historyItem.uid) }
-        coVerify { getHistoryUseCase() }
+        // Assert
+        assertEquals(emptyList<History>(), viewModel.getHistoryLiveData().value)
     }
 }

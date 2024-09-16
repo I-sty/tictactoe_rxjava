@@ -2,23 +2,25 @@ package com.project.tictactoe.data.repository
 
 import com.project.tictactoe.data.local.AppDatabase
 import com.project.tictactoe.data.model.HistoryEntity
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Maybe
 import org.koin.core.annotation.Single
 
 @Single
 class HistoryRepositoryImpl(private val db: AppDatabase) : IHistoryRepository {
-    override suspend fun getHistory(): List<HistoryEntity> {
+    override fun getHistory(): Maybe<List<HistoryEntity>> {
         return db.historyDao().getAll()
     }
 
-    override suspend fun addHistory(historyEntity: HistoryEntity) {
+    override fun addHistory(historyEntity: HistoryEntity): Completable {
         return db.historyDao().addHistory(historyEntity)
     }
 
-    override suspend fun deleteHistoryById(uid: Int) {
+    override fun deleteHistoryById(uid: Int): Maybe<Int> {
         return db.historyDao().deleteByUid(uid)
     }
 
-    override suspend fun deleteAllHistory() {
+    override fun deleteAllHistory(): Maybe<Int> {
         return db.historyDao().deleteAll()
     }
 }

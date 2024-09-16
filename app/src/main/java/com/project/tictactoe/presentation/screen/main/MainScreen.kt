@@ -1,8 +1,6 @@
 package com.project.tictactoe.presentation.screen.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -33,15 +28,11 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +53,7 @@ fun MainScreen(
     navController: NavHostController,
     modifier: Modifier,
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.observeAsState()
 
     val player1Name = navController.currentBackStackEntry?.arguments?.getString("player1Name")
     val player2Name = navController.currentBackStackEntry?.arguments?.getString("player2Name")
@@ -71,13 +62,27 @@ fun MainScreen(
         viewModel.handleEvent(GameEvent.PlayerNameChanged(player1Name, player2Name))
     }
 
-    if (state.showWinnerPopup) {
+    if (state?.showWinnerPopup == true) {
         AlertDialog(
             onDismissRequest = { viewModel.handleEvent(GameEvent.OnDismissWinnerDialogClicked) },
             title = { Text(stringResource(R.string.dialog_title_congratulations)) },
             text = { Text(stringResource(R.string.dialog_content_you_won)) },
             confirmButton = {
                 Button(onClick = { viewModel.handleEvent(GameEvent.OnDismissWinnerDialogClicked) }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            },
+            properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)
+        )
+    }
+
+    if (state?.showDrawGamePopup == true) {
+        AlertDialog(
+            onDismissRequest = { viewModel.handleEvent(GameEvent.OnDismissDrawGameDialogClicked) },
+            title = { Text(stringResource(R.string.dialog_title_draw_game)) },
+            text = { Text(stringResource(R.string.dialog_content_draw_game)) },
+            confirmButton = {
+                Button(onClick = { viewModel.handleEvent(GameEvent.OnDismissDrawGameDialogClicked) }) {
                     Text(stringResource(android.R.string.ok))
                 }
             },
@@ -99,7 +104,7 @@ fun MainScreen(
                     onRestart = { viewModel.handleEvent(GameEvent.RestartClicked) })
             }) { innerPadding ->
             MainScreenContent(
-                state,
+                state!!,
                 handleEvent = viewModel::handleEvent,
                 modifier = modifier
                     .consumeWindowInsets(innerPadding)
@@ -110,44 +115,15 @@ fun MainScreen(
 }
 
 @Composable
-private fun GameFab(
-    onRestart: () -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
+private fun GameFab(onRestart: () -> Unit) {
     Column {
-        if (expanded) {
-            AnimatedVisibility(visible = expanded) {
-                MiniFabItem(icon = Icons.Filled.Refresh, text = "Restart", onClick = {
-                    onRestart()
-                    expanded = false
-                })
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        FloatingActionButton(onClick = { expanded = !expanded }) {
+        FloatingActionButton(onClick = { onRestart() }) {
             Icon(
-                imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.MoreVert,
+                imageVector = Icons.Filled.Refresh,
                 tint = Color.White,
-                contentDescription = if (expanded) "Close" else "Options"
+                contentDescription = "Restart"
             )
         }
-    }
-}
-
-@Composable
-private fun MiniFabItem(
-    icon: ImageVector, text: String, onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp), verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(imageVector = icon, contentDescription = text, tint = Color.White)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text, color = Color.White)
     }
 }
 
@@ -182,11 +158,19 @@ private fun MainScreenContent(
                     )
                 }
                 if (state.winner != null) {
-                    Text(
-                        "Winner: ${state.winner.username}",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    handleEvent(GameEvent.ShowWinnerDialog)
+                    if (state.winner == Player.None) {
+                        Text(
+                            "Draw game!",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        handleEvent(GameEvent.DrawGameDialog)
+                    } else {
+                        Text(
+                            "Winner: ${state.winner.username}",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        handleEvent(GameEvent.ShowWinnerDialog)
+                    }
                 }
             }
         }

@@ -1,11 +1,11 @@
 package com.project.tictactoe.di
 
-import kotlinx.coroutines.Dispatchers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-class DispatcherModule {
+class SchedulersModule {
     @Single
-    fun provideDispatcherIO() = Dispatchers.IO
+    fun provideSchedulerIO() = Schedulers.io()
 }
