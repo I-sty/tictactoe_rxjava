@@ -3,10 +3,10 @@ package com.project.tictactoe.domain.model
 data class GameState(
     val error: String? = null,
     val loading: Boolean = false,
-    val currentPlayer: Player = Player.X,
+    var currentPlayer: Player = Player.X,
     val playerX: Player = Player.X,
     val playerO: Player = Player.O,
-    val board: Array<Array<Player>> = Array(3) { Array(3) { Player.None } },
+    var board: Array<Array<Player>> = Array(3) { Array(3) { Player.None } },
     val winner: Player? = null,
     var status: GameStatus = GameStatus.NOT_STARTED,
     var showWinnerPopup: Boolean = false,
