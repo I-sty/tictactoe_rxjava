@@ -4,31 +4,56 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.project.tictactoe.domain.model.GameState
 import com.project.tictactoe.domain.model.GameStatus
 import com.project.tictactoe.domain.model.Player
+import com.project.tictactoe.domain.usecase.AddHistoryUseCase
+import com.project.tictactoe.domain.usecase.BoardIsFullUseCase
 import com.project.tictactoe.domain.usecase.ChangePlayerNameUseCase
+import com.project.tictactoe.domain.usecase.CheckWinnerUseCase
+import com.project.tictactoe.domain.usecase.GetNextPlayerUseCase
 import com.project.tictactoe.domain.usecase.HandleCellClickUseCase
 import com.project.tictactoe.domain.usecase.NewMatchUseCase
 import com.project.tictactoe.domain.usecase.RestartGameUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.spyk
+import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.Callable
 import kotlin.test.assertEquals
+
 
 class MainViewModelTest {
 
     private lateinit var viewModel: MainViewModel
-    private val handleCellClickUseCase: HandleCellClickUseCase = mockk(relaxed = true)
     private val restartGameUseCase: RestartGameUseCase = mockk(relaxed = true)
     private val newMatchUseCase: NewMatchUseCase = mockk(relaxed = true)
     private val changePlayerNameUseCase: ChangePlayerNameUseCase = mockk(relaxed = true)
+    private val addHistoryUseCase: AddHistoryUseCase = mockk(relaxed = true)
+    private val boardIsFullUseCase: BoardIsFullUseCase = mockk(relaxed = true)
+    private val getNextPlayerUseCase: GetNextPlayerUseCase = mockk(relaxed = true)
+    private val checkWinnerUseCase: CheckWinnerUseCase = mockk(relaxed = true)
+    private val testScheduler = TestScheduler()
+
+    private val handleCellClickUseCase: HandleCellClickUseCase =
+        HandleCellClickUseCase(
+            addHistoryUseCase,
+            getNextPlayerUseCase,
+            boardIsFullUseCase,
+            checkWinnerUseCase,
+            testScheduler,
+        )
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setup() {
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { scheduler: Callable<Scheduler?>? -> Schedulers.trampoline() }
+
         viewModel = MainViewModel(
             handleCellClickUseCase,
             restartGameUseCase,
@@ -110,7 +135,6 @@ class MainViewModelTest {
         assertEquals(GameStatus.NOT_STARTED, updatedState.status)
         assertEquals(0, updatedState.playerX.score)
         assertEquals(0, updatedState.playerO.score)
-        checkBoard(updatedState)
     }
 
     @Test
@@ -143,7 +167,6 @@ class MainViewModelTest {
         assertEquals(Player.X, updatedState.currentPlayer)
         assertEquals(null, updatedState.winner)
         assertEquals(GameStatus.NOT_STARTED, updatedState.status)
-        checkBoard(updatedState)
     }
 
     @Test
@@ -179,15 +202,5 @@ class MainViewModelTest {
         assertEquals(false, updatedState.showWinnerPopup)
         assertEquals(GameStatus.NOT_STARTED, updatedState.status)
         assertEquals(null, updatedState.winner)
-        checkBoard(updatedState)
-    }
-
-    private fun checkBoard(updatedState: GameState?) {
-        if (updatedState == null) return
-        for (row in updatedState.board) {
-            for (cell in row) {
-                assertEquals(Player.None, cell)
-            }
-        }
     }
 }

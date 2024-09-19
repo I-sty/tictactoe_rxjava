@@ -34,7 +34,7 @@ class MainViewModel(
         when (event) {
             is GameEvent.CellClicked -> {
                 val disposable =
-                    handleCellClickUseCase(_state.value!!, event.row, event.col)
+                    handleCellClickUseCase(requireNotNull(_state.value), event.row, event.col)
                         .observeOn(
                             AndroidSchedulers.mainThread()
                         ).subscribe(
@@ -70,7 +70,7 @@ class MainViewModel(
 
             is GameEvent.PlayerNameChanged -> {
                 val disposable = changePlayerNameUseCase(
-                    _state.value!!,
+                    requireNotNull(_state.value),
                     event.player1Name,
                     event.player2Name
                 ).observeOn(AndroidSchedulers.mainThread()).subscribe {
@@ -90,7 +90,7 @@ class MainViewModel(
 
     private fun newMatch() {
         val disposable =
-            newMatchUseCase(_state.value!!).observeOn(AndroidSchedulers.mainThread())
+            newMatchUseCase(requireNotNull(_state.value)).observeOn(AndroidSchedulers.mainThread())
                 .subscribe { _state.value = it }
         disposables.add(disposable)
     }
